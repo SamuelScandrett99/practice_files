@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from arches.app.models.resource import Resource
 from arches.app.models.models import TileModel
-
+from arches.app.models.graph import Graph
 import json
 
 
@@ -23,7 +23,8 @@ def resourceCount(request):
     for x in graphs:
         if x.isresource == True:
             graphIDlist.append(x.graphid)
-            readableName.append(x)
+	    stringVersion = str(x)
+            readableName.append(stringVersion)
 
     # Have two identical lists, one with the UUID 
     # and one with the human readable name
