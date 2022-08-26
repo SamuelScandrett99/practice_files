@@ -12,35 +12,27 @@ def resourceCount(request):
     using a particular resource model.
     '''
 
-    # UUID for CarParkingV3_Address  : a634604a-21fb-11ed-af4b-00155d7d8bf7
-    # UUID for TreeTypes             : 3edf41ac-2459-11ed-81ce-00155d7d8122
-
+    graphIDlist = []
+    readableName = []
     counter = {}
 
-    resources = Resource.objects.all()
-    for res in resources:
-        key = 'graph_id'
-        dictview = vars(res)
-        
-        if key in dictview:
-            # UUID was type UUID so wouldnt match unless converted to string
-            strval = str(dictview[key])
+    # Go through graphs
+    # Select for resources over branches
+    # Get graphids and append to list
+    graphs = Graph.objects.all()
+    for x in graphs:
+        if x.isresource == True:
+            graphIDlist.append(x.graphid)
+            readableName.append(x)
 
-            if strval == "a634604a-21fb-11ed-af4b-00155d7d8bf7":
-                # Adds the readable name to the dict 
-                # Adds with 1 as the else will not be registered after first if
-                # therefore one is not missed out
-                if "CarParkingV3_Address" not in counter:
-                    counter["CarParkingV3_Address"] = 1  
-                else:
-                    counter["CarParkingV3_Address"] += 1             
-                
-
-            elif strval == "3edf41ac-2459-11ed-81ce-00155d7d8122":
-                if "TreeType" not in counter:
-                    counter["TreeType"] = 1  
-                else:
-                    counter["TreeType"] += 1            
+    # Have two identical lists, one with the UUID 
+    # and one with the human readable name
+    # Filter for each UUID in first list and append len of results 
+    # to dict with key name as readable from other list 
+    for each_id, each_name in zip(graphIDlist, readableName):
+        resources = Resource.objects.filter(graph_id = each_id)
+        counter[each_name] = len(resources)
+       
 
     # Convert to json
     counter = json.dumps(counter)
